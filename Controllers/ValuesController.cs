@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,7 +15,7 @@ namespace apiHes.Controllers
     {
         // GET api/values
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public ActionResult<string> Get()
         {
             string Resultado = "";
             try
@@ -21,11 +23,20 @@ namespace apiHes.Controllers
                 SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
                 conSQL.Open();
 
-                return new string[] { "Api working 2.0" };
+                DataSet ds = new DataSet();
+                string query = "select * from accion";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if(ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
             }
             catch (Exception e)
             {
-                return new string[] { e.Message };
+                return e.Message;
             }
         }
 
