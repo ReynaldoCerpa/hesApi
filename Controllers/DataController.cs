@@ -18,27 +18,9 @@ namespace apiHes.Controllers
         [HttpGet]
         public ActionResult<string> Get()
         {
-            string Resultado = "";
-            try
-            {
-                SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
-                conSQL.Open();
-
-                DataSet ds = new DataSet();
-                string query = "select * from accion";
-                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
-
-                adapter.Fill(ds, "ConsultaDS");
-                if(ds.Tables.Count >= 1)
-                {
-                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
-                }
-                return Resultado;
-            }
-            catch (Exception e)
-            {
-                return e.Message;
-            }
+            
+            return "Connected to api";
+            
         }
 
         // GET api/values/5
@@ -146,15 +128,11 @@ namespace apiHes.Controllers
             }
         }
 
-
-
-        
-
-
         // POST api/values
         [HttpPost("addMejora/")]
-        public void AddAccion(Accion accion)
+        public void addMejora(Accion accion)
         {
+            Console.WriteLine("----------------------------\n" + " Request: "+Request.Body+ "\n----------------------------");
             try
             {
                 //"2021-09-07"
@@ -174,7 +152,34 @@ namespace apiHes.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine("Oh no! something went wrong... \n" + e);
+                Console.WriteLine("----------------------------\n Oh no! something went wrong... \n" + e + "\n----------------------------");
+            }
+        }
+
+        [HttpPost]
+        [Route("addMejora2/")]
+        public void AddAccion2([FromBody] Accion accion)
+        {
+            try
+            {
+                //"2021-09-07"
+                SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
+                SqlCommand cmd = new SqlCommand("insert into accion values (@idReporte, @idEmpleado, @fechaLimite, @fechaRealizado, null, @descripcion)", conSQL);
+                cmd.Parameters.Add(new SqlParameter("@idReporte", accion.idReporte));
+                cmd.Parameters.Add(new SqlParameter("@idEmpleado", accion.idEmpleado));
+                cmd.Parameters.Add(new SqlParameter("@fechaLimite", accion.fechaLimite));
+                cmd.Parameters.Add(new SqlParameter("@fechaRealizado", accion.fechaRealizado));
+                cmd.Parameters.Add(new SqlParameter("@descripcion", accion.descripcion));
+                conSQL.Open();
+                int rowsAffected = cmd.ExecuteNonQuery();
+                conSQL.Close();
+
+                Console.WriteLine("----------------------------\n Rows added: " + rowsAffected + "\n----------------------------");
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("----------------------------\n Oh no! something went wrong... \n" + e + "\n----------------------------");
             }
         }
 
