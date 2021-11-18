@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Web.Http.Cors;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -14,17 +16,23 @@ namespace apiHes.Controllers
     [ApiController]
     public class DataController : ControllerBase
     {
+        public SqlConnection connectDB()
+        {
+            SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
+            return conSQL;
+        }
+
         // GET api/value
         [HttpGet]
-        public ActionResult<string> Get()
+        public IActionResult Get()
         {
             
-            return "Connected to api";
+            return Ok("Connected to apii");
             
         }
 
-        // GET api/values/5
-        [HttpGet("userID/{id}")]
+        [HttpGet]
+        [Route("userID/{id}")]
         public ActionResult<string> Get(int id)
         {
             string Resultado = "";
@@ -34,7 +42,7 @@ namespace apiHes.Controllers
                 conSQL.Open();
 
                 DataSet ds = new DataSet();
-                string query = "select * from accion where idReporte = "+id;
+                string query = "select * from accion where idReporte = " + id;
                 SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
 
                 adapter.Fill(ds, "ConsultaDS");
@@ -128,71 +136,50 @@ namespace apiHes.Controllers
             }
         }
 
-        // POST api/values
         [HttpPost("addMejora/")]
-        public void addMejora(Accion accion)
+        [Produces("application/json")]
+        public bool addMejora([FromBody] dynamic data)
         {
-            Console.WriteLine("----------------------------\n" + " Request: "+Request.Body+ "\n----------------------------");
+            string values = data.body;
+            var datos = (JObject)JsonConvert.DeserializeObject(values);
+
             try
             {
+
                 //"2021-09-07"
-                SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
+                SqlConnection conSQL = connectDB();
                 SqlCommand cmd = new SqlCommand("insert into accion values (@idReporte, @idEmpleado, @fechaLimite, @fechaRealizado, null, @descripcion)", conSQL);
-                cmd.Parameters.Add(new SqlParameter("@idReporte", accion.idReporte));
-                cmd.Parameters.Add(new SqlParameter("@idEmpleado",accion.idEmpleado));
-                cmd.Parameters.Add(new SqlParameter("@fechaLimite", accion.fechaLimite));
-                cmd.Parameters.Add(new SqlParameter("@fechaRealizado", accion.fechaRealizado));
-                cmd.Parameters.Add(new SqlParameter("@descripcion", accion.descripcion));
-                conSQL.Open();
-                int rowsAffected = cmd.ExecuteNonQuery();
-                conSQL.Close();
-
-                Console.WriteLine("----------------------------\n Rows added: "+rowsAffected+ "\n----------------------------");
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("----------------------------\n Oh no! something went wrong... \n" + e + "\n----------------------------");
-            }
-        }
-
-        [HttpPost]
-        [Route("addMejora2/")]
-        public void AddAccion2([FromBody] Accion accion)
-        {
-            try
-            {
-                //"2021-09-07"
-                SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
-                SqlCommand cmd = new SqlCommand("insert into accion values (@idReporte, @idEmpleado, @fechaLimite, @fechaRealizado, null, @descripcion)", conSQL);
-                cmd.Parameters.Add(new SqlParameter("@idReporte", accion.idReporte));
-                cmd.Parameters.Add(new SqlParameter("@idEmpleado", accion.idEmpleado));
-                cmd.Parameters.Add(new SqlParameter("@fechaLimite", accion.fechaLimite));
-                cmd.Parameters.Add(new SqlParameter("@fechaRealizado", accion.fechaRealizado));
-                cmd.Parameters.Add(new SqlParameter("@descripcion", accion.descripcion));
+                cmd.Parameters.Add(new SqlParameter("@idReporte", datos["idReporte"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@idEmpleado", datos["idEmpleado"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@fechaLimite", datos["fechaLimite"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@fechaRealizado", datos["fechaRealizado"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@descripcion", datos["descripcion"].ToString()));
                 conSQL.Open();
                 int rowsAffected = cmd.ExecuteNonQuery();
                 conSQL.Close();
 
                 Console.WriteLine("----------------------------\n Rows added: " + rowsAffected + "\n----------------------------");
 
+                return (rowsAffected > 0) ? true : false;
             }
             catch (Exception e)
             {
-                Console.WriteLine("----------------------------\n Oh no! something went wrong... \n" + e + "\n----------------------------");
+                Console.WriteLine("----------------------------\n Oh no! something went wrong... \n\n" + e + "\n----------------------------");
+                return false;
             }
+            
         }
 
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        //// PUT api/values/5
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        //// DELETE api/values/5
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //}
     }
 }
