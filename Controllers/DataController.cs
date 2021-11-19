@@ -18,7 +18,8 @@ namespace apiHes.Controllers
     {
         public SqlConnection connectDB()
         {
-            SqlConnection conSQL = connectDB();
+            SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
+            return conSQL;
         }
 
         // GET api/value
@@ -166,7 +167,7 @@ namespace apiHes.Controllers
         }
 
         [HttpGet("awards/topThree/")]
-        public ActionResult<string> GetMejora()
+        public ActionResult<string> GetTopThree()
         {
             string Resultado = "";
             try
@@ -191,7 +192,7 @@ namespace apiHes.Controllers
         }
 
         [HttpGet("awards/table/")]
-        public ActionResult<string> GetMejora()
+        public ActionResult<string> GetTable()
         {
             string Resultado = "";
             try
@@ -216,7 +217,7 @@ namespace apiHes.Controllers
         }
 
         [HttpGet("indicators/verti/")]
-        public ActionResult<string> GetMejora()
+        public ActionResult<string> GetVerti()
         {
             string Resultado = "";
             try
@@ -241,7 +242,7 @@ namespace apiHes.Controllers
         }
 
         [HttpGet("indicators/hori/")]
-        public ActionResult<string> GetMejora()
+        public ActionResult<string> GetHori()
         {
             string Resultado = "";
             try
@@ -266,7 +267,7 @@ namespace apiHes.Controllers
         }
 
         [HttpGet("indicators/pie/")]
-        public ActionResult<string> GetMejora()
+        public ActionResult<string> GetPie()
         {
             string Resultado = "";
             try
@@ -291,7 +292,7 @@ namespace apiHes.Controllers
         }
 
         [HttpGet("dashboard/")]
-        public ActionResult<string> GetMejora()
+        public ActionResult<string> GetDashboard()
         {
             string Resultado = "";
             try
