@@ -18,17 +18,16 @@ namespace apiHes.Controllers
     {
         public SqlConnection connectDB()
         {
-            SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
-            return conSQL;
+            SqlConnection conSQL = connectDB();
         }
 
         // GET api/value
         [HttpGet]
         public IActionResult Get()
         {
-            
+
             return Ok("Connected to apii");
-            
+
         }
 
         [HttpGet]
@@ -38,8 +37,7 @@ namespace apiHes.Controllers
             string Resultado = "";
             try
             {
-                SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
-                conSQL.Open();
+                SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
                 string query = "select * from accion where idReporte = " + id;
@@ -64,8 +62,7 @@ namespace apiHes.Controllers
             string Resultado = "";
             try
             {
-                SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
-                conSQL.Open();
+                SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
                 string query = "select * from empleado";
@@ -90,8 +87,7 @@ namespace apiHes.Controllers
             string Resultado = "";
             try
             {
-                SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
-                conSQL.Open();
+                SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
                 string query = "select * from tipoMejora where idTipoMejora = " + id;
@@ -116,8 +112,7 @@ namespace apiHes.Controllers
             string Resultado = "";
             try
             {
-                SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
-                conSQL.Open();
+                SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
                 string query = "select * from tipoMejora";
@@ -167,7 +162,57 @@ namespace apiHes.Controllers
                 Console.WriteLine("----------------------------\n Oh no! something went wrong... \n\n" + e + "\n----------------------------");
                 return false;
             }
-            
+
+        }
+
+        [HttpGet("awards/topThree/")]
+        public ActionResult<string> GetMejora()
+        {
+            string Resultado = "";
+            try
+            {
+                SqlConnection conSQL = connectDB();
+
+                DataSet ds = new DataSet();
+                string query = "select titulo as 'title', idPropositor as 'author', propuesta as 'description' from reporteidea r limit 3";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if (ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        [HttpGet("awards/table/")]
+        public ActionResult<string> GetMejora()
+        {
+            string Resultado = "";
+            try
+            {
+                SqlConnection conSQL = connectDB();
+
+                DataSet ds = new DataSet();
+                string query = "select idReporte as numProp, 'FOO' as nombre, 'FOO' as areaPropone, titulo from reporteidea";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if (ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
 
         //// PUT api/values/5
