@@ -290,6 +290,31 @@ namespace apiHes.Controllers
             }
         }
 
+        [HttpGet("dashboard/")]
+        public ActionResult<string> GetMejora()
+        {
+            string Resultado = "";
+            try
+            {
+                SqlConnection conSQL = connectDB();
+
+                DataSet ds = new DataSet();
+                string query = "select idReporte as 'numProp', MONTH(fechaElaboracion) as 'mes', fechaElaboracion as 'fecha', idReporte as 'areaPropone', titulo as 'titulo', idReporte as 'areaMejora', idReporte as 'tipoMejora', idReporte as 'gerente' from reporteidea";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if (ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
         //// PUT api/values/5
         //[HttpPut("{id}")]
         //public void Put(int id, [FromBody] string value)
