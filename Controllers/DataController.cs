@@ -18,7 +18,7 @@ namespace apiHes.Controllers
     {
         public SqlConnection connectDB()
         {
-            SqlConnection conSQL = new SqlConnection("Data source=LAPTOP-REY" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
+            SqlConnection conSQL = new SqlConnection("Data source=DESKTOP-WINDOWS" + ";Initial Catalog=hutchinson" + ";User ID=root" + ";Password=pass" + ";");
             return conSQL;
         }
 
@@ -175,7 +175,7 @@ namespace apiHes.Controllers
                 SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
-                string query = "select titulo as 'title', idPropositor as 'author', propuesta as 'description' from reporteidea r limit 3";
+                string query = "select top 3 titulo as 'title', idPropositor as 'author', propuesta as 'description' from reporteidea r";
                 SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
 
                 adapter.Fill(ds, "ConsultaDS");
