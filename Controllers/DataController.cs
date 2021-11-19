@@ -215,6 +215,81 @@ namespace apiHes.Controllers
             }
         }
 
+        [HttpGet("indicators/verti/")]
+        public ActionResult<string> GetMejora()
+        {
+            string Resultado = "";
+            try
+            {
+                SqlConnection conSQL = connectDB();
+
+                DataSet ds = new DataSet();
+                string query = "select MONTH(fechaElaboracion) as 'mes', count(idReporte) from reporteidea group by mes";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if (ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        [HttpGet("indicators/hori/")]
+        public ActionResult<string> GetMejora()
+        {
+            string Resultado = "";
+            try
+            {
+                SqlConnection conSQL = connectDB();
+
+                DataSet ds = new DataSet();
+                string query = "select idPropositor, count(idReporte) from reporteidea group by idPropositor;";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if (ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        [HttpGet("indicators/pie/")]
+        public ActionResult<string> GetMejora()
+        {
+            string Resultado = "";
+            try
+            {
+                SqlConnection conSQL = connectDB();
+
+                DataSet ds = new DataSet();
+                string query = "select count(idReporte) as 'cuenta', 100 - count(idReporte) from reporteidea";
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if (ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
         //// PUT api/values/5
         //[HttpPut("{id}")]
         //public void Put(int id, [FromBody] string value)
