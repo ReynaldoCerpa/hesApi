@@ -166,6 +166,49 @@ namespace apiHes.Controllers
 
         }
 
+        [HttpPost("addReporteIdea/")]
+        [Produces("application/json")]
+        public bool addReporteIdea([FromBody] dynamic data)
+        {
+            string values = data.body;
+            var datos = (JObject)JsonConvert.DeserializeObject(values);
+
+            try
+            {
+
+                //"2021-09-07"
+                SqlConnection conSQL = connectDB();
+                SqlCommand cmd = new SqlCommand("insert into accion values (@idReporte, @idPiloto, @idPropositor, @idSupervisor, @titulo, @oportunidad, @areaOportunidad, @propuesta, @imgAntes, null, @idIndicadorMejora, @indicadorInicial, @idUnidadMedida, cast(getdate() as date)", conSQL);
+                cmd.Parameters.Add(new SqlParameter("@idReporte", datos["@idReporte"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@idPiloto", datos["@idPiloto"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@idPropositor", datos["@idPropositor"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@idSupervisor", datos["@idSupervisor"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@titulo", datos["@titulo"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@oportunidad", datos["@oportunidad"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@areaOportunidad", datos["@areaOportunidad"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@propuesta", datos["@propuesta"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@imgAntes", datos["@imgAntes"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@idIndicadorMejora", datos["@idIndicadorMejora"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@indicadorInicial", datos["@indicadorInicial"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@idUnidadMedida", datos["@idUnidadMedida"].ToString()));
+
+
+                conSQL.Open();
+                int rowsAffected = cmd.ExecuteNonQuery();
+                conSQL.Close();
+
+                Console.WriteLine("----------------------------\n Rows added: " + rowsAffected + "\n----------------------------");
+
+                return (rowsAffected > 0) ? true : false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("----------------------------\n Oh no! something went wrong... \n\n" + e + "\n----------------------------");
+                return false;
+            }
+
+        }
+
         [HttpGet("awards/topThree/")]
         public ActionResult<string> GetTopThree()
         {
