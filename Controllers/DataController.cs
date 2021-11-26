@@ -32,7 +32,7 @@ namespace apiHes.Controllers
         }
 
         [HttpGet]
-        [Route("userID/{id}")]
+        [Route("getReporteIdea/{id}")]
         public ActionResult<string> Get(int id)
         {
             string Resultado = "";
@@ -41,7 +41,7 @@ namespace apiHes.Controllers
                 SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
-                string query = "select * from accion where idReporte = " + id;
+                string query = "select * from reporteIdea where idReporte = " + id;
                 SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
 
                 adapter.Fill(ds, "ConsultaDS");
@@ -57,8 +57,8 @@ namespace apiHes.Controllers
             }
         }
 
-        [HttpGet("getUsers/")]
-        public ActionResult<string> GetUsers()
+        [HttpGet("getEmpleados/")]
+        public ActionResult<string> GetEmpleados()
         {
             string Resultado = "";
             try
@@ -66,7 +66,7 @@ namespace apiHes.Controllers
                 SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
-                string query = "select * from empleado";
+                string query = "select idEmpleado as 'idEmpleado', contadorIdeas as 'contadorIdeas' from empleado";
                 SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
 
                 adapter.Fill(ds, "ConsultaDS");
@@ -82,8 +82,8 @@ namespace apiHes.Controllers
             }
         }
 
-        [HttpGet("tipoMejora/{id}")]
-        public ActionResult<string> GetMejora(int id)
+        [HttpGet("getIdeasDeMejora/")]
+        public ActionResult<string> GetIdeasDeMejora()
         {
             string Resultado = "";
             try
@@ -91,32 +91,7 @@ namespace apiHes.Controllers
                 SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
-                string query = "select * from tipoMejora where idTipoMejora = " + id;
-                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
-
-                adapter.Fill(ds, "ConsultaDS");
-                if (ds.Tables.Count >= 1)
-                {
-                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
-                }
-                return Resultado;
-            }
-            catch (Exception e)
-            {
-                return e.Message;
-            }
-        }
-
-        [HttpGet("tiposMejora/")]
-        public ActionResult<string> GetMejora()
-        {
-            string Resultado = "";
-            try
-            {
-                SqlConnection conSQL = connectDB();
-
-                DataSet ds = new DataSet();
-                string query = "select * from tipoMejora";
+                string query = "select * from reporteidea";
                 SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
 
                 adapter.Fill(ds, "ConsultaDS");
@@ -172,26 +147,16 @@ namespace apiHes.Controllers
         {
             string values = data.body;
             var datos = (JObject)JsonConvert.DeserializeObject(values);
-
+            Console.WriteLine("Datos: "+datos);
             try
             {
-
                 //"2021-09-07"
                 SqlConnection conSQL = connectDB();
-                SqlCommand cmd = new SqlCommand("insert into accion values (@idReporte, @idPiloto, @idPropositor, @idSupervisor, @titulo, @oportunidad, @areaOportunidad, @propuesta, @imgAntes, null, @idIndicadorMejora, @indicadorInicial, @idUnidadMedida, cast(getdate() as date)", conSQL);
-                cmd.Parameters.Add(new SqlParameter("@idReporte", datos["@idReporte"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@idPiloto", datos["@idPiloto"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@idPropositor", datos["@idPropositor"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@idSupervisor", datos["@idSupervisor"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@titulo", datos["@titulo"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@oportunidad", datos["@oportunidad"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@areaOportunidad", datos["@areaOportunidad"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@propuesta", datos["@propuesta"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@imgAntes", datos["@imgAntes"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@idIndicadorMejora", datos["@idIndicadorMejora"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@indicadorInicial", datos["@indicadorInicial"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@idUnidadMedida", datos["@idUnidadMedida"].ToString()));
-
+                SqlCommand cmd = new SqlCommand("insert into reporteidea values (@idReporte, 1, 1, 1, @titulo, @oportunidad, 'qwer', @propuesta, null, null, 1, null, 1, cast(getdate() as date))", conSQL);
+                cmd.Parameters.Add(new SqlParameter("@idReporte", datos["idReporte"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@titulo", datos["titulo"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@oportunidad", datos["oportunidad"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@propuesta", datos["propuesta"].ToString()));
 
                 conSQL.Open();
                 int rowsAffected = cmd.ExecuteNonQuery();
