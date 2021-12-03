@@ -132,7 +132,7 @@ namespace apiHes.Controllers
             }
         }
 
-        [HttpGet("getAprobacion1/{id}")]
+        [HttpGet("getAprobacion1/")]
         public ActionResult<string> GetApproval1(int id)
         {
             string Resultado = "";
@@ -141,7 +141,7 @@ namespace apiHes.Controllers
                 SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
-                string query = "select * from aprobacion1 where idReporte = " + id;
+                string query = "select * from aprobacion1 ";
                 SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
 
                 adapter.Fill(ds, "ConsultaDS");
@@ -157,7 +157,7 @@ namespace apiHes.Controllers
             }
         }
 
-        [HttpGet("getAprobacion2/{id}")]
+        [HttpGet("getAprobacion2/")]
         public ActionResult<string> GetApproval2(int id)
         {
             string Resultado = "";
@@ -166,7 +166,7 @@ namespace apiHes.Controllers
                 SqlConnection conSQL = connectDB();
 
                 DataSet ds = new DataSet();
-                string query = "select * from aprobacion2 where idReporte = " + id;
+                string query = "select * from aprobacion2 ";
                 SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
 
                 adapter.Fill(ds, "ConsultaDS");
@@ -248,9 +248,9 @@ namespace apiHes.Controllers
 
         }
 
-        [HttpPost("addTipoMejora/")]
+        [HttpPost("approval1/")]
         [Produces("application/json")]
-        public bool addTipoIdea([FromBody] dynamic data)
+        public bool addApproval1([FromBody] dynamic data)
         {
             string values = data.body;
             var datos = (JObject)JsonConvert.DeserializeObject(values);
@@ -259,13 +259,49 @@ namespace apiHes.Controllers
             {
                 //"2021-09-07"
                 SqlConnection conSQL = connectDB();
-                SqlCommand cmd = new SqlCommand("insert into tipoMejora values (@idTipoMejora, @descripcion)", conSQL);
+                SqlCommand cmd = new SqlCommand("insert into aprobacion1 values (@idReporte, null, @aprobado, @idTipoMejora, @idJustificacionRech, @comentariosRech, cast(getdate() as date))", conSQL);
+                cmd.Parameters.Add(new SqlParameter("@idReporte", datos["idReporte"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@aprobado", datos["aprobado"].ToString()));
                 cmd.Parameters.Add(new SqlParameter("@idTipoMejora", datos["idTipoMejora"].ToString()));
-                cmd.Parameters.Add(new SqlParameter("@descripcion", datos["descripcion"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@idJustificacionRech", datos["idJustificacionRech"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@comentariosRech", datos["comentariosRech"].ToString()));
 
                 conSQL.Open();
                 int rowsAffected = cmd.ExecuteNonQuery();
                 conSQL.Close();
+
+                Console.WriteLine("----------------------------\n Rows added: " + rowsAffected + "\n----------------------------");
+
+                return (rowsAffected > 0) ? true : false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("----------------------------\n Oh no! something went wrong... \n\n" + e + "\n----------------------------");
+                return false;
+            }
+
+        }
+
+        [HttpPost("approval2/")]
+        [Produces("application/json")]
+        public bool addApproval2([FromBody] dynamic data)
+        {
+            string values = data.body;
+            var datos = (JObject)JsonConvert.DeserializeObject(values);
+            Console.WriteLine("Datos: " + datos);
+            try
+            {
+                //"2021-09-07"
+                SqlConnection conSQL = connectDB();
+                SqlCommand cmd = new SqlCommand("insert into aprobacion2 values (@idReporte, null, @factible, @idJustificacionNoFact, @comentariosNoFact, cast(getdate() as date))", conSQL);
+                cmd.Parameters.Add(new SqlParameter("@idReporte", datos["idReporte"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@factible", datos["factible"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@idJustificacionNoFact", datos["idJustificacionNoFact"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@comentariosNoFact", datos["comentariosNoFact"].ToString()));
+
+                conSQL.Open();
+                int rowsAffected = cmd.ExecuteNonQuery();
+                conSQL.Close(); 
 
                 Console.WriteLine("----------------------------\n Rows added: " + rowsAffected + "\n----------------------------");
 
