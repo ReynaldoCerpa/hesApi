@@ -107,6 +107,81 @@ namespace apiHes.Controllers
             }
         }
 
+        [HttpGet("getTipoMejora/{id}")]
+        public ActionResult<string> GetTipoMejora(int id)
+        {
+            string Resultado = "";
+            try
+            {
+                SqlConnection conSQL = connectDB();
+
+                DataSet ds = new DataSet();
+                string query = "select * from tipoMejora where idTipoMejora = " + id;
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if (ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        [HttpGet("getAprobacion1/{id}")]
+        public ActionResult<string> GetApproval1(int id)
+        {
+            string Resultado = "";
+            try
+            {
+                SqlConnection conSQL = connectDB();
+
+                DataSet ds = new DataSet();
+                string query = "select * from aprobacion1 where idReporte = " + id;
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if (ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
+        [HttpGet("getAprobacion2/{id}")]
+        public ActionResult<string> GetApproval2(int id)
+        {
+            string Resultado = "";
+            try
+            {
+                SqlConnection conSQL = connectDB();
+
+                DataSet ds = new DataSet();
+                string query = "select * from aprobacion2 where idReporte = " + id;
+                SqlDataAdapter adapter = new SqlDataAdapter(query, conSQL);
+
+                adapter.Fill(ds, "ConsultaDS");
+                if (ds.Tables.Count >= 1)
+                {
+                    Resultado = JsonConvert.SerializeObject(ds.Tables[0]);
+                }
+                return Resultado;
+            }
+            catch (Exception e)
+            {
+                return e.Message;
+            }
+        }
+
         [HttpPost("addMejora/")]
         [Produces("application/json")]
         public bool addMejora([FromBody] dynamic data)
@@ -152,11 +227,41 @@ namespace apiHes.Controllers
             {
                 //"2021-09-07"
                 SqlConnection conSQL = connectDB();
-                SqlCommand cmd = new SqlCommand("insert into reporteidea values (@idReporte, 1, 1, 1, @titulo, @oportunidad, 'qwer', @propuesta, null, null, 1, null, 1, cast(getdate() as date))", conSQL);
-                cmd.Parameters.Add(new SqlParameter("@idReporte", datos["idReporte"].ToString()));
+                SqlCommand cmd = new SqlCommand("insert into reporteidea values (1, 1, 1, @titulo, @oportunidad, 'qwer', @propuesta, null, null, 1, null, 1, cast(getdate() as date))", conSQL);
                 cmd.Parameters.Add(new SqlParameter("@titulo", datos["titulo"].ToString()));
                 cmd.Parameters.Add(new SqlParameter("@oportunidad", datos["oportunidad"].ToString()));
                 cmd.Parameters.Add(new SqlParameter("@propuesta", datos["propuesta"].ToString()));
+
+                conSQL.Open();
+                int rowsAffected = cmd.ExecuteNonQuery();
+                conSQL.Close();
+
+                Console.WriteLine("----------------------------\n Rows added: " + rowsAffected + "\n----------------------------");
+
+                return (rowsAffected > 0) ? true : false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("----------------------------\n Oh no! something went wrong... \n\n" + e + "\n----------------------------");
+                return false;
+            }
+
+        }
+
+        [HttpPost("addTipoMejora/")]
+        [Produces("application/json")]
+        public bool addTipoIdea([FromBody] dynamic data)
+        {
+            string values = data.body;
+            var datos = (JObject)JsonConvert.DeserializeObject(values);
+            Console.WriteLine("Datos: " + datos);
+            try
+            {
+                //"2021-09-07"
+                SqlConnection conSQL = connectDB();
+                SqlCommand cmd = new SqlCommand("insert into tipoMejora values (@idTipoMejora, @descripcion)", conSQL);
+                cmd.Parameters.Add(new SqlParameter("@idTipoMejora", datos["idTipoMejora"].ToString()));
+                cmd.Parameters.Add(new SqlParameter("@descripcion", datos["descripcion"].ToString()));
 
                 conSQL.Open();
                 int rowsAffected = cmd.ExecuteNonQuery();
